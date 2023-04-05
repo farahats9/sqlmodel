@@ -29,7 +29,7 @@ from pydantic.fields import SHAPE_SINGLETON
 from pydantic.fields import FieldInfo as PydanticFieldInfo
 from pydantic.fields import ModelField, Undefined, UndefinedType
 from pydantic.main import ModelMetaclass, validate_model
-from pydantic.typing import ForwardRef, NoArgAnyCallable, resolve_annotations
+from pydantic.typing import ForwardRef, NoArgAnyCallable, resolve_annotations  # type: ignore
 from pydantic.utils import ROOT_KEY, Representation
 from sqlalchemy import Boolean, Column, Date, DateTime
 from sqlalchemy import Enum as sa_Enum
@@ -522,7 +522,7 @@ class SQLModel(BaseModel, metaclass=SQLModelMetaclass, registry=default_registry
             return
         else:
             # Set in SQLAlchemy, before Pydantic to trigger events and updates
-            if getattr(self.__config__, "table", False) and is_instrumented(self, name):  # type: ignore
+            if getattr(self.__config__, "table", False) and is_instrumented(self, name):
                 set_attribute(self, name, value)
             # Set in Pydantic model to trigger possible validation changes, only for
             # non relationship values
