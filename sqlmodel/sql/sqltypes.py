@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Optional, TypeVar, Union, cast
+from typing import Any, Optional, Union, cast
 
 from sqlalchemy import CHAR, types
 from sqlalchemy.dialects.postgresql import UUID

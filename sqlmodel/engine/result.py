@@ -1,4 +1,4 @@
-from typing import Any, Generic, Iterator, List, Optional, Sequence, TypeVar
+from typing import Any, Generic, Iterator, List, Optional, TypeVar
 
 from sqlalchemy.engine.result import Result as _Result
 from sqlalchemy.engine.result import ScalarResult as _ScalarResult
