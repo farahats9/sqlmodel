@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Optional, cast
+from typing import Any, Optional, Union, cast
 
 from sqlalchemy import CHAR, types
 from sqlalchemy.dialects.postgresql import UUID
@@ -8,15 +8,14 @@ from sqlalchemy.sql.type_api import TypeEngine
 
 
 class AutoString(types.TypeDecorator):  # type: ignore
-
     impl = types.String
     cache_ok = True
     mysql_default_length = 255
 
-    def load_dialect_impl(self, dialect: Dialect) -> "types.TypeEngine[Any]":
+    def load_dialect_impl(self, dialect: Dialect) -> TypeEngine[Any]:
         impl = cast(types.String, self.impl)
         if impl.length is None and dialect.name == "mysql":
-            return dialect.type_descriptor(types.String(self.mysql_default_length))
+            return dialect.type_descriptor(types.String(self.mysql_default_length))  # type: ignore[arg-type, no-any-return]
         return super().load_dialect_impl(dialect)
 
 
@@ -33,13 +32,15 @@ class GUID(types.TypeDecorator):  # type: ignore
     impl = CHAR
     cache_ok = True
 
-    def load_dialect_impl(self, dialect: Dialect) -> TypeEngine:  # type: ignore
+    def load_dialect_impl(self, dialect: Dialect) -> "TypeEngine[Any]":
         if dialect.name == "postgresql":
-            return dialect.type_descriptor(UUID())
+            return dialect.type_descriptor(UUID())  # type: ignore[arg-type, no-any-return]
         else:
-            return dialect.type_descriptor(CHAR(32))
+            return dialect.type_descriptor(CHAR(32))  # type: ignore[arg-type, no-any-return]
 
-    def process_bind_param(self, value: Any, dialect: Dialect) -> Optional[str]:
+    def process_bind_param(
+        self, value: Optional[Union[str, uuid.UUID]], dialect: Dialect
+    ) -> Optional[str]:
         if value is None:
             return value
         elif dialect.name == "postgresql":
@@ -51,10 +52,12 @@ class GUID(types.TypeDecorator):  # type: ignore
                 # hexstring
                 return value.hex
 
-    def process_result_value(self, value: Any, dialect: Dialect) -> Optional[uuid.UUID]:
+    def process_result_value(
+        self, value: Optional[Union[str, uuid.UUID]], dialect: Dialect
+    ) -> Optional[uuid.UUID]:
         if value is None:
             return value
-        else:
-            if not isinstance(value, uuid.UUID):
-                value = uuid.UUID(value)
-            return cast(uuid.UUID, value)
+
+        if not isinstance(value, uuid.UUID):
+            value = uuid.UUID(value)
+        return value

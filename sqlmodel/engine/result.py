@@ -1,4 +1,4 @@
-from typing import Generic, Iterator, List, Optional, Sequence, TypeVar
+from typing import Any, Generic, Iterator, List, Optional, TypeVar
 
 from sqlalchemy.engine.result import Result as _Result
 from sqlalchemy.engine.result import ScalarResult as _ScalarResult
@@ -6,23 +6,23 @@ from sqlalchemy.engine.result import ScalarResult as _ScalarResult
 _T = TypeVar("_T")
 
 
-class ScalarResult(_ScalarResult[_T], Generic[_T]):
-    def all(self) -> Sequence[_T]:
+class ScalarResult(_ScalarResult, Generic[_T]):
+    def all(self) -> List[_T]:
         return super().all()
 
-    def partitions(self, size: Optional[int] = None) -> Iterator[Sequence[_T]]:
+    def partitions(self, size: Optional[int] = None) -> Iterator[List[Any]]:
         return super().partitions(size)
 
-    def fetchall(self) -> Sequence[_T]:
+    def fetchall(self) -> List[_T]:
         return super().fetchall()
 
-    def fetchmany(self, size: Optional[int] = None) -> Sequence[_T]:
+    def fetchmany(self, size: Optional[int] = None) -> List[_T]:
         return super().fetchmany(size)
 
     def __iter__(self) -> Iterator[_T]:
         return super().__iter__()
 
-    def __next__(self) -> _T:
+    def __next__(self) -> Any:
         return super().__next__()
 
     def first(self) -> Optional[_T]:
@@ -31,11 +31,11 @@ class ScalarResult(_ScalarResult[_T], Generic[_T]):
     def one_or_none(self) -> Optional[_T]:
         return super().one_or_none()
 
-    def one(self) -> _T:
+    def one(self) -> Any:
         return super().one()
 
 
-class Result(_Result[_T], Generic[_T]):
+class Result(_Result, Generic[_T]):
     def scalars(self, index: int = 0) -> ScalarResult[_T]:
         return super().scalars(index)  # type: ignore
 
@@ -45,8 +45,8 @@ class Result(_Result[_T], Generic[_T]):
     def __next__(self) -> _T:  # type: ignore
         return super().__next__()  # type: ignore
 
-    def partitions(self, size: Optional[int] = None) -> Iterator[List[_T]]:  # type: ignore
-        return super().partitions(size)  # type: ignore
+    def partitions(self, size: Optional[int] = None) -> Iterator[List[Any]]:
+        return super().partitions(size)
 
     def fetchall(self) -> List[_T]:  # type: ignore
         return super().fetchall()  # type: ignore
@@ -55,7 +55,7 @@ class Result(_Result[_T], Generic[_T]):
         return super().fetchone()  # type: ignore
 
     def fetchmany(self, size: Optional[int] = None) -> List[_T]:  # type: ignore
-        return super().fetchmany()  # type: ignore
+        return super().fetchmany(size)  # type: ignore
 
     def all(self) -> List[_T]:  # type: ignore
         return super().all()  # type: ignore
@@ -76,4 +76,4 @@ class Result(_Result[_T], Generic[_T]):
         return super().one()  # type: ignore
 
     def scalar(self) -> Optional[_T]:
-        return super().scalar()  # type: ignore
+        return super().scalar()
